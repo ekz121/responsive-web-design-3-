@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Perjalanan Luar Angkasa</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #000;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+            scroll-behavior: smooth;
+        }
+
+        header {
+            background-color: rgba(17, 17, 17, 0.9);
+            padding: 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 10;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-sizing: border-box;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            margin: 0;
+        }
+
+        nav ul li {
+            display: inline;
+            margin: 0 15px;
+        }
+
+        nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s, transform 0.3s;
+            cursor: pointer;
+        }
+
+        nav ul li a:hover {
+            color: #b19cd9;
+            transform: scale(1.1);
+        }
+
+        main {
+            padding: 20px;
+            margin-top: 80px; /* agar konten tidak tertutup header fixed */
+            margin-bottom: 60px; /* agar konten tidak tertutup footer fixed */
+            position: relative;
+            z-index: 1;
+        }
+
+        .content-box {
+            background-color: rgba(34, 34, 34, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px auto;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s, z-index 0s;
+            cursor: pointer;
+            max-width: 800px;
+            position: relative;
+        }
+
+        .content-box:hover, .content-box.focused {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(177, 156, 217, 0.7);
+            z-index: 5;
+        }
+
+        .content-box.focused {
+            transform: scale(1.1);
+            z-index: 10;
+            background-color: rgba(34, 34, 34, 1);
+        }
+
+        .content-box img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+            margin: 10px 0;
+            transition: transform 0.3s;
+        }
+
+        .content-box.focused img {
+            transform: scale(1.05);
+        }
+
+        .content-box a {
+            color: #b19cd9;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        .content-box a:hover {
+            text-decoration: underline;
+            color: #d8bfd8;
+        }
+
+        .read-more {
+            cursor: pointer;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        .hidden-content {
+            display: none;
+            margin-top: 15px;
+            text-align: left;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 5px;
+        }
+
+        .content-box.focused .hidden-content {
+            display: block;
+        }
+
+        footer {
+            background-color: #111;
+            padding: 10px;
+            text-align: center;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            z-index: 10;
+            box-sizing: border-box;
+        }
+
+        #particles-js {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .menu-icon {
+            display: none;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        /* Styling Galeri */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .gallery-item {
+            background-color: rgba(34, 34, 34, 0.8);
+            padding: 10px;
+            border-radius: 10px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .gallery-item:hover, .gallery-item.focused {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(177, 156, 217, 0.7);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+
+        /* Styling untuk Checkout Tiket */
+        .checkout-box {
+            background-color: #b19cd9;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px auto;
+            text-align: center;
+            max-width: 800px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .checkout-box:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(177, 156, 217, 0.7);
+        }
+
+        .checkout-box a {
+            color: #000;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .checkout-box a:hover {
+            text-decoration: underline;
+        }
+
+        /* Modal untuk detail program */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #222;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 600px;
+            width: 90%;
+            border: 2px solid #00f7ff;
+            position: relative;
+            text-align: left;
+        }
+
+        .modal-content h3 {
+            margin-top: 0;
+            color: #00f7ff;
+        }
+
+        .modal-content pre {
+            background-color: #111;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #fff;
+        }
+
+        .copy-btn {
+            background-color: #00f7ff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        /* Responsive Design */
+        @media only screen and (max-width: 600px) {
+            body {
+                font-size: 14px;
+            }
+
+            .content-box {
+                margin: 10px auto;
+            }
+
+            .menu-icon {
+                display: block;
+            }
+
+            nav ul {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                background-color: #111;
+                width: 100%;
+                top: 80px;
+                left: 0;
+                text-align: center;
+            }
+
+            nav ul.active {
+                display: flex;
+            }
+
+            nav ul li {
+                display: block;
+                margin: 10px 0;
+            }
+
+            .gallery-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                width: 95%;
+            }
+
+            header {
+                flex-direction: column;
+                padding: 10px;
+            }
+
+            header h1 {
+                font-size: 20px;
+            }
+        }
+
+        @media only screen and (min-width: 601px) and (max-width: 900px) {
+            .content-box {
+                max-width: 600px;
+            }
+
+            .gallery-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+
+    <header>
+        <h1>Blog Perjalanan Luar Angkasa</h1>
+        <nav>
+            <div class="menu-icon">☰</div>
+            <ul class="nav-links">
+                <li><a href="#beranda" onclick="scrollToSection('beranda')">Beranda</a></li>
+                <li><a href="#artikel" onclick="scrollToSection('artikel')">Artikel</a></li>
+                <li><a href="#galeri" onclick="scrollToSection('galeri')">Galeri</a></li>
+                <li><a href="#tentang" onclick="scrollToSection('tentang')">Tentang</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="beranda" class="section">
+            <div class="content-box" onclick="focusBox(this)">
+                <h2>Selamat Datang di Blog Perjalanan Luar Angkasa</h2>
+                <p>Jelajahi perjalanan yang menarik tentang petualangan di luar angkasa. Mulai dari eksplorasi planet Mars hingga masuk ke lubang black hole. Jika kalian gabut di rumah dan tidak ada aktivitas yang menarik, kalian bisa langsung mengikuti paket tour kami.</p>
+            </div>
+        </section>
+
+        <section id="artikel" class="section">
+            <div class="content-box" onclick="focusBox(this)">
+                <h2>Petualangan ke Mars</h2>
+                <img src="img/1.jpeg" alt="Gambar Mars">
+                <p>Eksplorasi ke planet merah yang penuh misteri.</p>
+                <div class="hidden-content">
+                    <p>Bayangkan melangkahkan kaki di tanah Mars yang berbatu, mengarungi lembah luas Valles Marineris, atau menyaksikan matahari terbenam dengan nuansa biru di cakrawala merahnya. Dengan setiap langkah, kita bukan hanya sekadar pelancong antarplanet, tetapi juga penjelajah yang mencari jawaban tentang masa lalu dan kemungkinan kehidupan di luar Bumi. Juga mencoba hal baru tentunya jika sudah bosan di bumi.</p>
+                </div>
+                <a class="read-more" onclick="event.stopPropagation(); toggleReadMore(this)">Baca Selengkapnya</a>
+            </div>
+            <div class="content-box" onclick="focusBox(this)">
+                <h2>Masuk ke Black Hole Jika Penasaran</h2>
+                <img src="img/2.jpeg" alt="Sabuk Asteroid">
+                <p>Pengalaman mendebarkan apa yang akan terjadi</p>
+                <div class="hidden-content">
+                    <p>Pernah membayangkan bagaimana rasanya terhisap ke dalam black hole? Apakah kita akan menemukan pintu ke dimensi lain, melihat masa depan, atau justru menjadi spageti kosmik? 🌀✨<br>
+                    Maka dari itu jadilah yang pertama!<br>
+                    Lubang hitam bukan sekadar misteri astronomi, tetapi juga gerbang menuju kemungkinan yang tak terbatas! Dari tarikan gravitasi yang tak tertandingi hingga teori perjalanan waktu, kita akan menyelami segala hal tentang black hole dengan cara yang seru dan penuh imajinasi.</p>
+                </div>
+                <a class="read-more" onclick="event.stopPropagation(); toggleReadMore(this)">Baca Selengkapnya</a>
+            </div>
+            <div class="content-box" onclick="openModal(this)">
+                <h2>Program Harga Wisata</h2>
+                <p>Klik untuk melihat informasi wisata menarik ini</p>
+            </div>
+        </section>
+
+        <section id="galeri" class="section">
+            <div class="content-box">
+                <h2>Galeri Perjalanan sebelumnya</h2>
+                <div class="gallery-grid" id="gallery">
+                    <!-- Gambar akan ditambahkan secara dinamis via JavaScript -->
+                </div>
+            </div>
+            <div class="checkout-box">
+                <a href="https://ekz121.github.io/comming-soon/">Checkout Tiket Sekarang</a>
+            </div>
+        </section>
+
+        <section id="tentang" class="section">
+            <div class="content-box" onclick="focusBox(this)">
+                <h2>Tentang Kami</h2>
+                <p>Kami adalah tim penggemar luar angkasa.<br>  yang siap mengajak kalian berlibur ke luar angkasa, sambil berbagi pengalaman dan pengetahuan tentang eksplorasi antariksa. Bergabunglah dengan kami dalam petualangan ini!</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2025 Blog Perjalanan Luar Angkasa</p>
+    </footer>
+
+    <!-- Modal untuk detail program -->
+    <div id="programModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">×</span>
+            <h3>Program Harga wisata</h3>
+            <p>PT Eka Kurniawan Zein </p>
+            <p>Program wisata: mars</p>
+            <p>Tanggal: 27/02/2030</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        // Konfigurasi Particles.js
+        particlesJS('particles-js', {
+            "particles": {
+                "number": { "value": 100, "density": { "enable": true, "value_area": 800 } },
+                "color": { "value": "#b19cd9" },
+                "shape": { "type": ["circle", "star"], "stroke": { "width": 0 } },
+                "opacity": { "value": 0.5, "random": true },
+                "size": { "value": 4, "random": true },
+                "line_linked": { "enable": true, "distance": 150, "color": "#b19cd9", "opacity": 0.3, "width": 1 },
+                "move": { "enable": true, "speed": 4, "direction": "none", "random": true, "straight": false, "out_mode": "out" }
+            },
+            "interactivity": {
+                "detect_on": "canvas",
+                "events": {
+                    "onhover": { "enable": true, "mode": "bubble" },
+                    "onclick": { "enable": true, "mode": "push" },
+                    "resize": true
+                },
+                "modes": {
+                    "bubble": { "distance": 200, "size": 6, "duration": 0.3, "opacity": 0.8 },
+                    "push": { "particles_nb": 5 }
+                }
+            },
+            "retina_detect": true
+        });
+
+        // Toggling menu hamburger
+        document.querySelector('.menu-icon').addEventListener('click', function() {
+            document.querySelector('.nav-links').classList.toggle('active');
+        });
+
+        // Fungsi scroll ke section
+        function scrollToSection(sectionId) {
+            document.getElementById(sectionId).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Fungsi fokus pada box yang diklik
+        function focusBox(element) {
+            const boxes = document.getElementsByClassName('content-box');
+            for (let box of boxes) {
+                box.classList.remove('focused');
+            }
+            element.classList.add('focused');
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        // Fungsi untuk galeri dinamis
+        const gallery = document.getElementById('gallery');
+        const images = [
+            { src: 'img/6.jpeg', alt: 'hoho' },
+            { src: 'img/4.jpeg', alt: 'hehe' },
+            { src: 'img/5.jpeg', alt: 'haha' },
+            { src: 'img/3.jpeg', alt: 'gambar keempat' }  // Gambar keempat
+        ];
+
+        function loadGallery() {
+            images.forEach((image, index) => {
+                const galleryItem = document.createElement('div');
+                galleryItem.classList.add('gallery-item');
+                galleryItem.innerHTML = `<img src="${image.src}" alt="${image.alt}">`;
+                galleryItem.addEventListener('click', function() {
+                    const items = document.getElementsByClassName('gallery-item');
+                    for (let item of items) {
+                        item.classList.remove('focused');
+                    }
+                    this.classList.add('focused');
+                    this.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                });
+                gallery.appendChild(galleryItem);
+            });
+        }
+
+        // Fungsi untuk toggle "Baca Selengkapnya"
+        function toggleReadMore(element) {
+            const contentBox = element.closest('.content-box');
+            const hiddenContent = contentBox.querySelector('.hidden-content');
+            hiddenContent.style.display = hiddenContent.style.display === 'block' ? 'none' : 'block';
+            element.textContent = hiddenContent.style.display === 'block' ? 'Sembunyikan' : 'Baca Selengkapnya';
+            contentBox.classList.toggle('focused');
+        }
+
+        // Fungsi untuk membuka modal
+        function openModal() {
+            const modal = document.getElementById('programModal');
+            modal.style.display = 'flex';
+        }
+
+        // Fungsi untuk menutup modal
+        function closeModal() {
+            const modal = document.getElementById('programModal');
+            modal.style.display = 'none';
+        }
+
+        // Fungsi untuk menyalin kode
+        function copyCode() {
+            const code = document.querySelector('#programModal pre').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                alert('Kode berhasil disalin!');
+            });
+        }
+
+        // Panggil fungsi untuk memuat galeri saat halaman dimuat
+        window.onload = loadGallery;
+    </script>
+</body>
+</html>
